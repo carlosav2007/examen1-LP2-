@@ -7,11 +7,12 @@ public class FrmDevuelta extends JFrame {
     JTextField txtMonto;
     JTable tabla;
     DefaultTableModel modelo;
-    int[] denominaciones = { 100000, 50000, 20000, 10000, 5000, 2000, 1000, 500, 200, 100, 50 };
-    String[] tipos = { "Billete", "Billete", "Billete", "Billete", "Billete", "Billete", "Billete", "Moneda", "Moneda",
-            "Moneda", "Moneda" };
-    int[] existencia = new int[denominaciones.length];
-    int[] ultimaCantidad = new int[denominaciones.length];
+    int[] denominacionesByM = { 100000, 50000, 20000, 10000, 5000, 2000, 1000, 500, 200, 100, 50 };
+    String[] tipos = { "Billetes", "Billetes", "Billetes", "Billetes", "Billetes", "Billetes", "Billetes", "Monedas",
+            "Moneda",
+            "Monedas", "Monedas" };
+    int[] existencia = new int[denominacionesByM.length];
+    int[] ultimaCantidad = new int[denominacionesByM.length];
 
     public FrmDevuelta() {
         setTitle("Calculadora de Devuelta");
@@ -73,8 +74,9 @@ public class FrmDevuelta extends JFrame {
     }
 
     private void ingresarExistencia() {
-        for (int i = 0; i < denominaciones.length; i++) {
-            String input = JOptionPane.showInputDialog("Ingrese la existencia de " + (tipos[i] + " de " + denominaciones[i]));
+        for (int i = 0; i < denominacionesByM.length; i++) {
+            String input = JOptionPane
+                    .showInputDialog("Ingrese la existencia de " + (tipos[i] + " de " + denominacionesByM[i]));
             if (esNumeroValido(input)) {
                 existencia[i] = Integer.parseInt(input);
             } else {
@@ -88,20 +90,23 @@ public class FrmDevuelta extends JFrame {
         String ingresoMonto = txtMonto.getText();
         if (esNumeroValido(ingresoMonto)) {
             int monto = Integer.parseInt(ingresoMonto);
-            for (int i = 0; i < denominaciones.length; i++) {
+            for (int i = 0; i < denominacionesByM.length; i++) {
                 ultimaCantidad[i] = 0;
-                if (monto >= denominaciones[i] && existencia[i] > 0) {
-                    int cantidad = Math.min(monto / denominaciones[i], existencia[i]);
-                    monto -= cantidad * denominaciones[i];
-                    existencia[i] -= cantidad;
-                    ultimaCantidad[i] = cantidad;
-                    if (cantidad > 0) {
-                        agregarFila(denominaciones[i], tipos[i], cantidad, existencia[i]);
+                if (monto >= denominacionesByM[i]) {
+                    if (existencia[i] > 0) {
+                        int cantidad = Math.min(monto / denominacionesByM[i], existencia[i]);
+                        monto -= cantidad * denominacionesByM[i];
+                        existencia[i] -= cantidad;
+                        ultimaCantidad[i] = cantidad;
+                        if (cantidad > 0) {
+                            agregarFila(denominacionesByM[i], tipos[i], cantidad, existencia[i]);
+                        }
                     }
                 }
             }
             if (monto > 0) {
-                JOptionPane.showMessageDialog(null, "No hay suficiente cambio disponible.", "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(null, "No hay suficiente cambio disponible.", "Error",
+                        JOptionPane.ERROR_MESSAGE);
             }
         } else {
             JOptionPane.showMessageDialog(null, "Ingrese un monto válido.", "Error", JOptionPane.ERROR_MESSAGE);
@@ -110,8 +115,8 @@ public class FrmDevuelta extends JFrame {
 
     private void mostrarUltimaDevolucion() {
         limpiarTabla();
-        for (int i = 0; i < denominaciones.length; i++) {
-            agregarFila(denominaciones[i], tipos[i], ultimaCantidad[i], existencia[i]);
+        for (int i = 0; i < denominacionesByM.length; i++) {
+            agregarFila(denominacionesByM[i], tipos[i], ultimaCantidad[i], existencia[i]);
         }
     }
 
@@ -131,15 +136,16 @@ public class FrmDevuelta extends JFrame {
 
     private void actualizarTablaExistencia() {
         limpiarTabla();
-        for (int i = 0; i < denominaciones.length; i++) {
-            agregarFila(denominaciones[i], tipos[i], 0, existencia[i]);
+        for (int i = 0; i < denominacionesByM.length; i++) {
+            agregarFila(denominacionesByM[i], tipos[i], 0, existencia[i]);
         }
     }
 
     private void editarExistencia() {
         int filaSeleccionada = tabla.getSelectedRow();
         if (filaSeleccionada >= 0) {
-            String nuevaCantidad = JOptionPane.showInputDialog("Ingrese la nueva existencia para " + denominaciones[filaSeleccionada]);
+            String nuevaCantidad = JOptionPane
+                    .showInputDialog("Ingrese la nueva existencia para " + denominacionesByM[filaSeleccionada]);
             if (esNumeroValido(nuevaCantidad)) {
                 existencia[filaSeleccionada] = Integer.parseInt(nuevaCantidad);
                 actualizarTablaExistencia();
@@ -147,7 +153,8 @@ public class FrmDevuelta extends JFrame {
                 JOptionPane.showMessageDialog(null, "Ingrese un número válido.", "Error", JOptionPane.ERROR_MESSAGE);
             }
         } else {
-            JOptionPane.showMessageDialog(null, "Seleccione una fila para editar.", "Advertencia", JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Seleccione una fila para editar.", "Advertencia",
+                    JOptionPane.WARNING_MESSAGE);
         }
     }
 
