@@ -9,8 +9,7 @@ public class FrmDevuelta extends JFrame {
     DefaultTableModel modelo;
     int[] denominacionesByM = { 100000, 50000, 20000, 10000, 5000, 2000, 1000, 500, 200, 100, 50 };
     String[] tipos = { "Billetes", "Billetes", "Billetes", "Billetes", "Billetes", "Billetes", "Billetes", "Monedas",
-            "Moneda",
-            "Monedas", "Monedas" };
+            "Moneda", "Monedas", "Monedas" };
     int[] existencia = new int[denominacionesByM.length];
     int[] ultimaCantidad = new int[denominacionesByM.length];
 
@@ -77,7 +76,7 @@ public class FrmDevuelta extends JFrame {
         for (int i = 0; i < denominacionesByM.length; i++) {
             String input = JOptionPane
                     .showInputDialog("Ingrese la existencia de " + (tipos[i] + " de " + denominacionesByM[i]));
-            if (esNumeroValido(input)) {
+            if (esNumeroValido(input) == "Válido") {
                 existencia[i] = Integer.parseInt(input);
             } else {
                 existencia[i] = 0;
@@ -88,19 +87,17 @@ public class FrmDevuelta extends JFrame {
     private void calcularDevuelta() {
         limpiarTabla();
         String ingresoMonto = txtMonto.getText();
-        if (esNumeroValido(ingresoMonto)) {
+        if (esNumeroValido(ingresoMonto) == "Válido") {
             int monto = Integer.parseInt(ingresoMonto);
             for (int i = 0; i < denominacionesByM.length; i++) {
                 ultimaCantidad[i] = 0;
-                if (monto >= denominacionesByM[i]) {
-                    if (existencia[i] > 0) {
-                        int cantidad = Math.min(monto / denominacionesByM[i], existencia[i]);
-                        monto -= cantidad * denominacionesByM[i];
-                        existencia[i] -= cantidad;
-                        ultimaCantidad[i] = cantidad;
-                        if (cantidad > 0) {
-                            agregarFila(denominacionesByM[i], tipos[i], cantidad, existencia[i]);
-                        }
+                if (monto >= denominacionesByM[i] && existencia[i] > 0) {
+                    int cantidad = Math.min(monto / denominacionesByM[i], existencia[i]);
+                    monto -= cantidad * denominacionesByM[i];
+                    existencia[i] -= cantidad;
+                    ultimaCantidad[i] = cantidad;
+                    if (cantidad > 0) {
+                        agregarFila(denominacionesByM[i], tipos[i], cantidad, existencia[i]);
                     }
                 }
             }
@@ -120,8 +117,16 @@ public class FrmDevuelta extends JFrame {
         }
     }
 
-    private boolean esNumeroValido(String input) {
-        return input != null && input.chars().allMatch(Character::isDigit);
+    private String esNumeroValido(String input) {
+        if (input == null) {
+            return "Inválido";
+        }
+        for (int i = 0; i < input.length(); i++) {
+            if (!Character.isDigit(input.charAt(i))) {
+                return "Inválido";
+            }
+        }
+        return "Válido";
     }
 
     private void limpiarTabla() {
@@ -131,7 +136,7 @@ public class FrmDevuelta extends JFrame {
     }
 
     private void agregarFila(int denominacion, String tipo, int cantidad, int existencia) {
-        modelo.addRow(new Object[] { denominacion, tipo, cantidad, existencia });
+        modelo.addRow(new Object[] {  denominacion,tipo, cantidad, existencia });
     }
 
     private void actualizarTablaExistencia() {
@@ -142,11 +147,11 @@ public class FrmDevuelta extends JFrame {
     }
 
     private void editarExistencia() {
-        int filaSeleccionada = tabla.getSelectedRow();
+        int filaSeleccionada = tabla.getSelectionModel().getLeadSelectionIndex();
         if (filaSeleccionada >= 0) {
             String nuevaCantidad = JOptionPane
                     .showInputDialog("Ingrese la nueva existencia para " + denominacionesByM[filaSeleccionada]);
-            if (esNumeroValido(nuevaCantidad)) {
+            if (esNumeroValido(nuevaCantidad) == "Válido") {
                 existencia[filaSeleccionada] = Integer.parseInt(nuevaCantidad);
                 actualizarTablaExistencia();
             } else {
@@ -162,3 +167,4 @@ public class FrmDevuelta extends JFrame {
         new FrmDevuelta().setVisible(true);
     }
 }
+
